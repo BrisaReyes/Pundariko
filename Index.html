@@ -32,7 +32,7 @@ header {
   border-bottom:1px solid var(--borde);
 }
 
-header .estrella {
+.estrella {
   color:var(--dorado);
   font-size:30px;
 }
@@ -100,10 +100,6 @@ h3 {
   color:var(--dorado);
 }
 
-button {
-  font-family:inherit;
-}
-
 .panel {
   background:var(--panel);
   border:1px solid var(--borde);
@@ -138,6 +134,11 @@ button {
 
 .boton:hover {
   background:#c0394b;
+}
+
+.boton:disabled {
+  opacity:.5;
+  cursor:wait;
 }
 
 .resultado {
@@ -221,6 +222,7 @@ button {
   line-height:1.8;
   font-size:16px;
   color:#e8dcd0;
+  white-space:pre-line;
 }
 
 .fecha {
@@ -230,10 +232,11 @@ button {
   margin-bottom:15px;
 }
 
-.cargando {
+.estado {
   text-align:center;
   color:var(--dorado);
-  padding:20px;
+  padding:15px;
+  font-size:13px;
 }
 
 footer {
@@ -248,8 +251,6 @@ footer {
 footer a {
   color:var(--dorado);
 }
-
-.oculto{display:none!important}
 
 @media(max-width:480px) {
   header{padding:35px 10px}
@@ -269,36 +270,32 @@ footer a {
 
 <main>
 
-<!-- TAROT GENERAL -->
-
 <h2>✧ TAROT GENERAL ✧</h2>
 <p class="subtitulo">Descubrí el mensaje de los arcanos</p>
 
 <div class="grid">
-  <button class="opcion" onclick="seleccionar('general',1)">
+  <button class="opcion" onclick="seleccionar('general',1,this)">
     UNA CARTA
   </button>
-  <button class="opcion" onclick="seleccionar('general',3)">
+  <button class="opcion" onclick="seleccionar('general',3,this)">
     TRES CARTAS
   </button>
-  <button class="opcion" onclick="seleccionar('general',10)">
+  <button class="opcion" onclick="seleccionar('general',10,this)">
     CRUZ CELTA
   </button>
 </div>
-
-<!-- TAROT AMOR -->
 
 <h2>♡ TAROT DEL AMOR ♡</h2>
 <p class="subtitulo">Explorá los vínculos y sentimientos</p>
 
 <div class="grid">
-  <button class="opcion" onclick="seleccionar('amor',1)">
+  <button class="opcion" onclick="seleccionar('amor',1,this)">
     UNA CARTA
   </button>
-  <button class="opcion" onclick="seleccionar('amor',3)">
+  <button class="opcion" onclick="seleccionar('amor',3,this)">
     TRES CARTAS
   </button>
-  <button class="opcion" onclick="seleccionar('amor',10)">
+  <button class="opcion" onclick="seleccionar('amor',10,this)">
     CRUZ CELTA
   </button>
 </div>
@@ -309,11 +306,8 @@ footer a {
     Elegí el tipo de tirada que querés realizar.
   </p>
 
-  <input
-    class="consulta"
-    id="pregunta"
-    placeholder="Escribí tu pregunta (opcional)"
-  >
+  <input class="consulta" id="pregunta"
+    placeholder="Escribí tu pregunta (opcional)">
 
   <button class="boton" onclick="tirarCartas()">
     REVELAR LAS CARTAS
@@ -325,8 +319,6 @@ footer a {
   </div>
 </div>
 
-<!-- HOROSCOPO -->
-
 <h2>✧ HORÓSCOPO ✧</h2>
 <p class="subtitulo">
   Las doce energías zodiacales · Horóscopo diario
@@ -337,10 +329,15 @@ footer a {
 <div class="panel" id="zonaHoroscopo">
   <h3 id="tituloSigno">TU SIGNO ZODIACAL</h3>
   <div class="fecha" id="fecha"></div>
+
   <div class="horoscopo-texto" id="textoHoroscopo">
     Seleccioná uno de los doce signos para consultar su horóscopo.
   </div>
-  <div id="estado" class="cargando"></div>
+
+  <div id="estado" class="estado"></div>
+  <button class="boton" onclick="cargarHoroscopos()">
+    ACTUALIZAR HORÓSCOPO
+  </button>
 </div>
 
 </main>
@@ -349,14 +346,14 @@ footer a {
   UNIVERSO PUNDARIKO
   <p>Un espacio para explorar los símbolos y el conocimiento interior.</p>
   <p>Horóscopo proporcionado por
-    <a href="https://sigastra.com/es/" target="_blank">Sigastra</a>
+    <a href="https://freeastroapi.com/" target="_blank">FreeAstroAPI</a>
   </p>
 </footer>
 
 <script>
 
 // ==================================
-// LOS 78 ARCANOS DEL TAROT
+// LOS 78 ARCANOS
 // ==================================
 
 const arcanos = [
@@ -391,10 +388,6 @@ const arcanos = [
 "DIEZ DE OROS","SOTA DE OROS","CABALLERO DE OROS",
 "REINA DE OROS","REY DE OROS"
 ];
-
-// ==================================
-// INTERPRETACIONES
-// ==================================
 
 const significados = [
 "Representa nuevos comienzos, libertad, espontaneidad y apertura a lo desconocido.",
@@ -446,43 +439,44 @@ const rangos = {
 };
 
 const posiciones = [
-"1. SITUACIÓN ACTUAL",
-"2. OBSTÁCULO O DESAFÍO",
-"3. RAÍZ DEL ASUNTO",
-"4. PASADO",
-"5. POSIBILIDAD CONSCIENTE",
-"6. FUTURO PRÓXIMO",
-"7. TU POSICIÓN",
-"8. ENTORNO",
-"9. DESEOS Y TEMORES",
-"10. RESULTADO SIMBÓLICO"
+"SITUACIÓN ACTUAL",
+"OBSTÁCULO O DESAFÍO",
+"RAÍZ DEL ASUNTO",
+"PASADO",
+"POSIBILIDAD CONSCIENTE",
+"FUTURO PRÓXIMO",
+"TU POSICIÓN",
+"ENTORNO",
+"DESEOS Y TEMORES",
+"RESULTADO SIMBÓLICO"
 ];
 
-let tipoActual = "general";
-let cantidadActual = 1;
+let tipoActual="general";
+let cantidadActual=0;
 
-// ==================================
-// SELECCIONAR TIRADA
-// ==================================
+function seleccionar(tipo,cantidad,boton) {
+  tipoActual=tipo;
+  cantidadActual=cantidad;
 
-function seleccionar(tipo,cantidad) {
+  document.querySelectorAll(".opcion").forEach(b=>{
+    b.classList.remove("activo");
+  });
 
-  tipoActual = tipo;
-  cantidadActual = cantidad;
+  boton.classList.add("activo");
 
   document.getElementById("resultadoTarot").style.display="none";
 
-  const nombre = tipo === "amor" ? "TAROT DEL AMOR" : "TAROT GENERAL";
+  const nombre=tipo==="amor"?"TAROT DEL AMOR":"TAROT GENERAL";
 
-  let titulo = cantidad === 1 ? "UNA CARTA" :
-               cantidad === 3 ? "TRES CARTAS" : "CRUZ CELTA";
+  const titulo=cantidad===1?"UNA CARTA":
+    cantidad===3?"TRES CARTAS":"CRUZ CELTA";
 
-  document.getElementById("tituloTirada").textContent =
-    nombre + " · " + titulo;
+  document.getElementById("tituloTirada").textContent=
+    nombre+" · "+titulo;
 
-  document.getElementById("descripcion").textContent =
-    cantidad === 1 ? "Una carta para explorar tu pregunta." :
-    cantidad === 3 ? "Pasado, presente y tendencia." :
+  document.getElementById("descripcion").textContent=
+    cantidad===1?"Una carta para explorar tu pregunta.":
+    cantidad===3?"Pasado, presente y tendencia.":
     "Una lectura simbólica de diez posiciones.";
 
   document.getElementById("zonaTarot").scrollIntoView({
@@ -491,72 +485,57 @@ function seleccionar(tipo,cantidad) {
   });
 }
 
-// ==================================
-// SIGNIFICADO DE CADA CARTA
-// ==================================
-
 function significadoCarta(carta,invertida) {
+  const indice=arcanos.indexOf(carta);
+  let texto="";
 
-  const indice = arcanos.indexOf(carta);
-  let texto = "";
-
-  if(indice < 22) {
-    texto = significados[indice];
+  if(indice<22) {
+    texto=significados[indice];
   } else {
-    const palo = Object.keys(palos).find(p => carta.includes(p));
-    const rango = Object.keys(rangos).find(r => carta.startsWith(r));
+    const palo=Object.keys(palos).find(p=>carta.includes(p));
+    const rango=Object.keys(rangos).find(r=>carta.startsWith(r));
 
-    texto = "Esta carta representa " +
-      (rangos[rango] || "un proceso") +
-      " relacionado con " + palos[palo] + ".";
+    texto="Esta carta representa "+
+      (rangos[rango]||"un proceso")+
+      " relacionado con "+palos[palo]+".";
   }
 
   if(invertida) {
-    texto += " En posición invertida, invita a revisar bloqueos, resistencias o aspectos que necesitan mayor atención.";
+    texto+=" En posición invertida, invita a revisar bloqueos, resistencias o aspectos que necesitan mayor atención.";
   }
 
   return texto;
 }
 
-// ==================================
-// INTERPRETACIÓN SEGÚN TIRADA
-// ==================================
-
 function contextoCarta(i) {
-
-  if(cantidadActual === 1) {
-    return tipoActual === "amor"
-      ? "En el plano afectivo, esta carta invita a reflexionar sobre los sentimientos, los vínculos y la manera de relacionarse."
-      : "El mensaje central de esta carta propone observar la situación actual y reconocer qué energía está presente.";
+  if(cantidadActual===1) {
+    return tipoActual==="amor"
+      ?"En el plano afectivo, esta carta invita a reflexionar sobre los sentimientos, los vínculos y la manera de relacionarse."
+      :"El mensaje central propone observar la situación actual y reconocer qué energía está presente.";
   }
 
-  if(cantidadActual === 3) {
-    const etapas = ["En relación con el pasado,","En el presente,","Como tendencia hacia adelante,"];
-    return tipoActual === "amor"
-      ? etapas[i] + " esta carta permite explorar la evolución emocional del vínculo."
-      : etapas[i] + " esta carta permite observar cómo se desarrolla el proceso.";
+  if(cantidadActual===3) {
+    const etapas=["En relación con el pasado,","En el presente,","Como tendencia hacia adelante,"];
+
+    return tipoActual==="amor"
+      ?etapas[i]+" esta carta permite explorar la evolución emocional del vínculo."
+      :etapas[i]+" esta carta permite observar cómo se desarrolla el proceso.";
   }
 
-  return posiciones[i] + ". " +
-    (tipoActual === "amor"
-    ? "En el ámbito afectivo, esta posición permite explorar las emociones, los vínculos y las dinámicas de la relación."
-    : "Esta posición permite explorar un aspecto diferente de la situación consultada.");
+  return posiciones[i]+". "+
+    (tipoActual==="amor"
+      ?"En el ámbito afectivo, esta posición permite explorar emociones y dinámicas del vínculo."
+      :"Esta posición permite explorar un aspecto diferente de la situación consultada.");
 }
 
-// ==================================
-// REALIZAR TIRADA
-// ==================================
-
 function tirarCartas() {
-
   if(!cantidadActual) {
     alert("Primero seleccioná una tirada.");
     return;
   }
 
-  const mazo = [...arcanos];
+  const mazo=[...arcanos];
 
-  // Mezclar el mazo
   for(let i=mazo.length-1;i>0;i--) {
     const j=Math.floor(Math.random()*(i+1));
     [mazo[i],mazo[j]]=[mazo[j],mazo[i]];
@@ -571,30 +550,32 @@ function tirarCartas() {
   interpretaciones.innerHTML="";
 
   elegidas.forEach((carta,i)=>{
-
     const invertida=Math.random()<0.3;
-
-    const nombre = carta + (invertida ? " · INVERTIDA" : " · DERECHA");
+    const nombre=carta+(invertida?" · INVERTIDA":" · DERECHA");
 
     const div=document.createElement("div");
     div.className="carta";
 
-    div.innerHTML=`
-      <div class="simbolo">✧</div>
-      <strong>${nombre}</strong>
-      <small>${cantidadActual===10 ? posiciones[i] :
-      cantidadActual===3 ? ["PASADO","PRESENTE","FUTURO"][i] :
-      "TU CARTA"}</small>
-    `;
+    const simbolo=document.createElement("div");
+    simbolo.className="simbolo";
+    simbolo.textContent="✧";
 
+    const titulo=document.createElement("strong");
+    titulo.textContent=nombre;
+
+    const posicion=document.createElement("small");
+    posicion.textContent=cantidadActual===10?posiciones[i]:
+      cantidadActual===3?["PASADO","PRESENTE","FUTURO"][i]:"TU CARTA";
+
+    div.append(simbolo,titulo,posicion);
     cartasDiv.appendChild(div);
 
     const texto=document.createElement("div");
     texto.className="interpretacion";
 
-    const h=document.createElement("strong");
-    h.style.color="var(--dorado)";
-    h.textContent=nombre;
+    const encabezado=document.createElement("strong");
+    encabezado.style.color="var(--dorado)";
+    encabezado.textContent=nombre;
 
     const p=document.createElement("p");
     p.textContent=significadoCarta(carta,invertida);
@@ -602,12 +583,8 @@ function tirarCartas() {
     const contexto=document.createElement("p");
     contexto.textContent=contextoCarta(i);
 
-    texto.appendChild(h);
-    texto.appendChild(p);
-    texto.appendChild(contexto);
-
+    texto.append(encabezado,p,contexto);
     interpretaciones.appendChild(texto);
-
   });
 
   const pregunta=document.getElementById("pregunta").value.trim();
@@ -628,10 +605,10 @@ function tirarCartas() {
 }
 
 // ==================================
-// HORÓSCOPO DE LOS 12 SIGNOS
+// LOS 12 SIGNOS
 // ==================================
 
-const signos = [
+const signos=[
 {nombre:"ARIES",clave:"aries",icono:"♈"},
 {nombre:"TAURO",clave:"taurus",icono:"♉"},
 {nombre:"GÉMINIS",clave:"gemini",icono:"♊"},
@@ -646,116 +623,145 @@ const signos = [
 {nombre:"PISCIS",clave:"pisces",icono:"♓"}
 ];
 
-let horoscopos = {};
+let horoscopos={};
+let signoSeleccionado=null;
 
 const contenedorSignos=document.getElementById("signos");
 
 signos.forEach(signo=>{
-
   const boton=document.createElement("button");
   boton.className="signo";
 
-  boton.innerHTML=`
-    <span class="icono">${signo.icono}</span>
-    <strong>${signo.nombre}</strong>
-  `;
+  const icono=document.createElement("span");
+  icono.className="icono";
+  icono.textContent=signo.icono;
 
-  boton.onclick=()=>mostrarHoroscopo(signo);
+  const nombre=document.createElement("strong");
+  nombre.textContent=signo.nombre;
+
+  boton.append(icono,nombre);
+  boton.onclick=()=>mostrarHoroscopo(signo,boton);
 
   contenedorSignos.appendChild(boton);
-
 });
 
 // ==================================
-// CONSULTAR API
+// CONSULTA AL SERVIDOR
 // ==================================
 
 async function cargarHoroscopos() {
-
   const estado=document.getElementById("estado");
+  const boton=document.querySelector("#zonaHoroscopo .boton");
 
-  estado.textContent="Consultando los horóscopos del día...";
+  estado.textContent="CONSULTANDO LOS HORÓSCOPOS DEL DÍA...";
+
+  if(boton) boton.disabled=true;
 
   try {
-
-    const respuesta=await fetch(
-      "https://sigastra.com/api/v1/daily?lang=es"
-    );
+    const respuesta=await fetch("/api/horoscopo");
 
     if(!respuesta.ok) {
-      throw new Error("No se pudo consultar el servicio.");
+      throw new Error("Error del servidor: "+respuesta.status);
     }
 
     const datos=await respuesta.json();
 
-    if(!Array.isArray(datos.items) || datos.items.length===0) {
-      throw new Error("La API no devolvió horóscopos.");
+    horoscopos={};
+
+    // Admite respuestas organizadas como array o como objeto.
+    const items=Array.isArray(datos)
+      ?datos
+      :Array.isArray(datos.items)
+        ?datos.items
+        :Array.isArray(datos.data)
+          ?datos.data
+          :null;
+
+    if(items) {
+      items.forEach(item=>{
+        const clave=String(
+          item.sign||item.signo||item.slug||item.name||""
+        ).toLowerCase();
+
+        const signo=signos.find(s=>
+          s.clave===clave ||
+          s.nombre.toLowerCase()===clave
+        );
+
+        const texto=item.text||item.horoscope||
+          item.description||item.prediction||item.content;
+
+        if(signo && typeof texto==="string") {
+          horoscopos[signo.clave]=texto;
+        }
+      });
+    } else if(datos && typeof datos==="object") {
+      Object.entries(datos).forEach(([clave,valor])=>{
+        const signo=signos.find(s=>
+          s.clave===clave.toLowerCase() ||
+          s.nombre.toLowerCase()===clave.toLowerCase()
+        );
+
+        const texto=typeof valor==="string"
+          ?valor
+          :valor?.text||valor?.horoscope||
+           valor?.description||valor?.prediction;
+
+        if(signo && typeof texto==="string") {
+          horoscopos[signo.clave]=texto;
+        }
+      });
     }
 
-    datos.items.forEach(item=>{
-
-      const clave=String(item.sign || item.slug || "").toLowerCase();
-
-      const signo=signos.find(s=>
-        s.clave===clave ||
-        s.nombre.toLowerCase()===clave
-      );
-
-      if(signo && item.text) {
-        horoscopos[signo.clave]=item.text;
-      }
-
-    });
-
-    estado.textContent="Horóscopos actualizados.";
-
     if(Object.keys(horoscopos).length===0) {
-      throw new Error("No se reconocieron los signos recibidos.");
+      throw new Error("La respuesta no contiene horóscopos reconocibles.");
+    }
+
+    estado.textContent="HORÓSCOPOS ACTUALIZADOS.";
+
+    if(signoSeleccionado) {
+      mostrarHoroscopo(
+        signoSeleccionado,
+        document.querySelector(".signo.activo")
+      );
     }
 
   } catch(error) {
-
-    estado.textContent="No se pudo cargar el horóscopo. Intentá nuevamente.";
-
     console.error(error);
-
+    estado.textContent="NO SE PUDO CARGAR EL HORÓSCOPO. INTENTÁ NUEVAMENTE.";
+  } finally {
+    if(boton) boton.disabled=false;
   }
-
 }
 
 // ==================================
-// MOSTRAR SIGNO
+// MOSTRAR HORÓSCOPO
 // ==================================
 
-function mostrarHoroscopo(signo) {
+function mostrarHoroscopo(signo,boton) {
+  signoSeleccionado=signo;
 
-  document.getElementById("tituloSigno").textContent =
+  document.getElementById("tituloSigno").textContent=
     signo.icono+" "+signo.nombre;
 
-  document.getElementById("fecha").textContent =
-    "HORÓSCOPO DIARIO · "+new Date().toLocaleDateString("es-AR");
+  document.getElementById("fecha").textContent=
+    "HORÓSCOPO DIARIO · "+
+    new Date().toLocaleDateString("es-AR");
 
   document.querySelectorAll(".signo").forEach(b=>{
     b.classList.remove("activo");
   });
 
-  const botones=[...document.querySelectorAll(".signo")];
+  if(boton) boton.classList.add("activo");
 
-  const indice=signos.indexOf(signo);
-
-  if(botones[indice]) {
-    botones[indice].classList.add("activo");
-  }
-
-  document.getElementById("textoHoroscopo").textContent =
-    horoscopos[signo.clave] ||
-    "El horóscopo todavía no está disponible. Volvé a intentar en unos momentos.";
+  document.getElementById("textoHoroscopo").textContent=
+    horoscopos[signo.clave]||
+    "El horóscopo de este signo todavía no está disponible.";
 
   document.getElementById("zonaHoroscopo").scrollIntoView({
     behavior:"smooth",
     block:"start"
   });
-
 }
 
 // ==================================
