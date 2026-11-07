@@ -1,0 +1,775 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UNIVERSO PUNDARIKO</title>
+
+<style>
+:root {
+  --fondo:#100c12;
+  --panel:#1e1720;
+  --dorado:#d9b66e;
+  --rojo:#a82739;
+  --texto:#eee5dc;
+  --borde:#594334;
+}
+
+*{box-sizing:border-box}
+
+body {
+  margin:0;
+  background:var(--fondo);
+  color:var(--texto);
+  font-family:Georgia,serif;
+}
+
+header {
+  text-align:center;
+  padding:48px 15px 35px;
+  background:linear-gradient(180deg,#32151f,#100c12);
+  border-bottom:1px solid var(--borde);
+}
+
+.estrella {
+  color:var(--dorado);
+  font-size:30px;
+}
+
+h1 {
+  color:var(--dorado);
+  letter-spacing:4px;
+  font-size:clamp(25px,6vw,40px);
+  margin:12px 0;
+}
+
+header p {
+  letter-spacing:3px;
+  font-size:12px;
+  color:#c9b7a4;
+}
+
+main {
+  width:min(950px,94%);
+  margin:30px auto;
+}
+
+h2 {
+  text-align:center;
+  color:var(--dorado);
+  letter-spacing:2px;
+  font-size:23px;
+  margin:35px 0 20px;
+}
+
+h3 {
+  color:var(--dorado);
+  text-align:center;
+}
+
+.subtitulo {
+  text-align:center;
+  color:#b9a9a0;
+  font-size:14px;
+  margin-bottom:25px;
+}
+
+.grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(145px,1fr));
+  gap:12px;
+}
+
+.opcion {
+  background:var(--panel);
+  color:var(--texto);
+  border:1px solid var(--borde);
+  border-radius:12px;
+  padding:20px 10px;
+  font-family:Georgia,serif;
+  font-size:14px;
+  cursor:pointer;
+  transition:.2s;
+  min-height:85px;
+}
+
+.opcion:hover,.opcion.activo {
+  border-color:var(--dorado);
+  background:#39232b;
+  color:var(--dorado);
+}
+
+.panel {
+  background:var(--panel);
+  border:1px solid var(--borde);
+  border-radius:14px;
+  padding:22px;
+  margin-top:20px;
+}
+
+.consulta {
+  width:100%;
+  background:#120e13;
+  color:white;
+  border:1px solid var(--borde);
+  border-radius:8px;
+  padding:13px;
+  margin:10px 0;
+  font-size:15px;
+}
+
+.boton {
+  display:block;
+  width:100%;
+  background:var(--rojo);
+  color:white;
+  border:1px solid #d15a67;
+  border-radius:8px;
+  padding:14px;
+  margin-top:15px;
+  cursor:pointer;
+  font-size:15px;
+}
+
+.boton:hover {
+  background:#c0394b;
+}
+
+.boton:disabled {
+  opacity:.5;
+  cursor:wait;
+}
+
+.resultado {
+  display:none;
+  margin-top:25px;
+}
+
+.cartas {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
+  gap:12px;
+  margin-top:20px;
+}
+
+.carta {
+  background:linear-gradient(145deg,#38202b,#19131b);
+  border:1px solid var(--dorado);
+  border-radius:12px;
+  padding:18px 10px;
+  text-align:center;
+  min-height:155px;
+}
+
+.carta .simbolo {
+  font-size:28px;
+  color:var(--dorado);
+  margin-bottom:12px;
+}
+
+.carta strong {
+  display:block;
+  color:var(--dorado);
+  font-size:13px;
+  line-height:1.5;
+}
+
+.carta small {
+  display:block;
+  color:#c9aaa0;
+  margin-top:10px;
+}
+
+.interpretacion {
+  background:#171118;
+  border-left:3px solid var(--dorado);
+  padding:17px;
+  border-radius:5px;
+  margin-top:12px;
+  line-height:1.7;
+  font-size:14px;
+}
+
+.signo {
+  background:var(--panel);
+  border:1px solid var(--borde);
+  border-radius:12px;
+  padding:16px 10px;
+  text-align:center;
+  cursor:pointer;
+  color:var(--texto);
+}
+
+.signo:hover,.signo.activo {
+  border-color:var(--dorado);
+  background:#38232c;
+}
+
+.signo .icono {
+  color:var(--dorado);
+  font-size:32px;
+  display:block;
+  margin-bottom:8px;
+}
+
+.signo strong {
+  font-size:12px;
+  letter-spacing:1px;
+}
+
+.horoscopo-texto {
+  line-height:1.8;
+  font-size:16px;
+  color:#e8dcd0;
+  white-space:pre-line;
+}
+
+.fecha {
+  text-align:center;
+  color:var(--dorado);
+  font-size:13px;
+  margin-bottom:15px;
+}
+
+.estado {
+  text-align:center;
+  color:var(--dorado);
+  padding:15px;
+  font-size:13px;
+}
+
+footer {
+  text-align:center;
+  padding:35px 15px;
+  color:#9c877b;
+  font-size:12px;
+  border-top:1px solid var(--borde);
+  margin-top:50px;
+}
+
+footer a {
+  color:var(--dorado);
+}
+
+@media(max-width:480px) {
+  header{padding:35px 10px}
+  main{width:94%}
+  .panel{padding:15px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="estrella">✧ ☾ ✧</div>
+  <h1>UNIVERSO PUNDARIKO</h1>
+  <p>TAROT · ASTROLOGÍA · SABIDURÍA SIMBÓLICA</p>
+</header>
+
+<main>
+
+<h2>✧ TAROT GENERAL ✧</h2>
+<p class="subtitulo">Descubrí el mensaje de los arcanos</p>
+
+<div class="grid">
+  <button class="opcion" onclick="seleccionar('general',1,this)">
+    UNA CARTA
+  </button>
+  <button class="opcion" onclick="seleccionar('general',3,this)">
+    TRES CARTAS
+  </button>
+  <button class="opcion" onclick="seleccionar('general',10,this)">
+    CRUZ CELTA
+  </button>
+</div>
+
+<h2>♡ TAROT DEL AMOR ♡</h2>
+<p class="subtitulo">Explorá los vínculos y sentimientos</p>
+
+<div class="grid">
+  <button class="opcion" onclick="seleccionar('amor',1,this)">
+    UNA CARTA
+  </button>
+  <button class="opcion" onclick="seleccionar('amor',3,this)">
+    TRES CARTAS
+  </button>
+  <button class="opcion" onclick="seleccionar('amor',10,this)">
+    CRUZ CELTA
+  </button>
+</div>
+
+<div class="panel" id="zonaTarot">
+  <h3 id="tituloTirada">EL TAROT TE ESPERA</h3>
+  <p class="subtitulo" id="descripcion">
+    Elegí el tipo de tirada que querés realizar.
+  </p>
+
+  <input class="consulta" id="pregunta"
+    placeholder="Escribí tu pregunta (opcional)">
+
+  <button class="boton" onclick="tirarCartas()">
+    REVELAR LAS CARTAS
+  </button>
+
+  <div class="resultado" id="resultadoTarot">
+    <div class="cartas" id="cartas"></div>
+    <div id="interpretaciones"></div>
+  </div>
+</div>
+
+<h2>✧ HORÓSCOPO ✧</h2>
+<p class="subtitulo">
+  Las doce energías zodiacales · Horóscopo diario
+</p>
+
+<div class="grid" id="signos"></div>
+
+<div class="panel" id="zonaHoroscopo">
+  <h3 id="tituloSigno">TU SIGNO ZODIACAL</h3>
+  <div class="fecha" id="fecha"></div>
+
+  <div class="horoscopo-texto" id="textoHoroscopo">
+    Seleccioná uno de los doce signos para consultar su horóscopo.
+  </div>
+
+  <div id="estado" class="estado"></div>
+  <button class="boton" onclick="cargarHoroscopos()">
+    ACTUALIZAR HORÓSCOPO
+  </button>
+</div>
+
+</main>
+
+<footer>
+  UNIVERSO PUNDARIKO
+  <p>Un espacio para explorar los símbolos y el conocimiento interior.</p>
+  <p>Horóscopo proporcionado por
+    <a href="https://freeastroapi.com/" target="_blank">FreeAstroAPI</a>
+  </p>
+</footer>
+
+<script>
+
+// ==================================
+// LOS 78 ARCANOS
+// ==================================
+
+const arcanos = [
+"EL LOCO","EL MAGO","LA SACERDOTISA","LA EMPERATRIZ",
+"EL EMPERADOR","EL HIEROFANTE","LOS ENAMORADOS",
+"EL CARRO","LA FUERZA","EL ERMITAÑO","LA RUEDA DE LA FORTUNA",
+"LA JUSTICIA","EL COLGADO","LA MUERTE","LA TEMPLANZA",
+"EL DIABLO","LA TORRE","LA ESTRELLA","LA LUNA",
+"EL SOL","EL JUICIO","EL MUNDO",
+
+"AS DE BASTOS","DOS DE BASTOS","TRES DE BASTOS",
+"CUATRO DE BASTOS","CINCO DE BASTOS","SEIS DE BASTOS",
+"SIETE DE BASTOS","OCHO DE BASTOS","NUEVE DE BASTOS",
+"DIEZ DE BASTOS","SOTA DE BASTOS","CABALLERO DE BASTOS",
+"REINA DE BASTOS","REY DE BASTOS",
+
+"AS DE COPAS","DOS DE COPAS","TRES DE COPAS",
+"CUATRO DE COPAS","CINCO DE COPAS","SEIS DE COPAS",
+"SIETE DE COPAS","OCHO DE COPAS","NUEVE DE COPAS",
+"DIEZ DE COPAS","SOTA DE COPAS","CABALLERO DE COPAS",
+"REINA DE COPAS","REY DE COPAS",
+
+"AS DE ESPADAS","DOS DE ESPADAS","TRES DE ESPADAS",
+"CUATRO DE ESPADAS","CINCO DE ESPADAS","SEIS DE ESPADAS",
+"SIETE DE ESPADAS","OCHO DE ESPADAS","NUEVE DE ESPADAS",
+"DIEZ DE ESPADAS","SOTA DE ESPADAS","CABALLERO DE ESPADAS",
+"REINA DE ESPADAS","REY DE ESPADAS",
+
+"AS DE OROS","DOS DE OROS","TRES DE OROS",
+"CUATRO DE OROS","CINCO DE OROS","SEIS DE OROS",
+"SIETE DE OROS","OCHO DE OROS","NUEVE DE OROS",
+"DIEZ DE OROS","SOTA DE OROS","CABALLERO DE OROS",
+"REINA DE OROS","REY DE OROS"
+];
+
+const significados = [
+"Representa nuevos comienzos, libertad, espontaneidad y apertura a lo desconocido.",
+"Simboliza iniciativa, capacidad de acción, creatividad y voluntad.",
+"Invita a escuchar la intuición, observar y descubrir lo que permanece oculto.",
+"Representa fertilidad, crecimiento, abundancia y expresión afectiva.",
+"Habla de estructura, autoridad, estabilidad y límites.",
+"Simboliza aprendizaje, tradición, valores y búsqueda de orientación.",
+"Representa elecciones, vínculos y decisiones importantes.",
+"Indica movimiento, determinación y dirección.",
+"Habla de fortaleza interior, paciencia y dominio de los impulsos.",
+"Invita a la introspección, la reflexión y la búsqueda interior.",
+"Representa cambios de ciclo, movimiento y nuevas circunstancias.",
+"Habla de equilibrio, responsabilidad y consecuencias de las decisiones.",
+"Invita a cambiar la perspectiva y observar desde otro lugar.",
+"Representa transformación, cierre de etapas y renovación.",
+"Simboliza equilibrio, moderación, integración y paciencia.",
+"Invita a reconocer apegos, dependencias y patrones limitantes.",
+"Representa una ruptura de estructuras que necesitan transformarse.",
+"Simboliza esperanza, inspiración, confianza y renovación.",
+"Invita a explorar emociones profundas, intuición e incertidumbre.",
+"Representa claridad, vitalidad, alegría y expansión.",
+"Habla de despertar, revisión y comprensión de experiencias pasadas.",
+"Simboliza culminación, integración y cierre de un ciclo."
+];
+
+const palos = {
+"BASTOS":"energía, iniciativa, creatividad y acción",
+"COPAS":"emociones, sensibilidad, vínculos y sentimientos",
+"ESPADAS":"pensamientos, decisiones, conflictos y claridad mental",
+"OROS":"recursos, estabilidad, seguridad y aspectos materiales"
+};
+
+const rangos = {
+"AS":"un comienzo o una oportunidad",
+"DOS":"una elección o un equilibrio",
+"TRES":"crecimiento y desarrollo",
+"CUATRO":"estabilidad y consolidación",
+"CINCO":"un desafío o una tensión",
+"SEIS":"armonía y recuperación",
+"SIETE":"evaluación y perseverancia",
+"OCHO":"movimiento y dedicación",
+"NUEVE":"maduración y experiencia",
+"DIEZ":"culminación y transformación",
+"SOTA":"aprendizaje y descubrimiento",
+"CABALLERO":"avance y determinación",
+"REINA":"madurez y comprensión",
+"REY":"dominio y autoridad"
+};
+
+const posiciones = [
+"SITUACIÓN ACTUAL",
+"OBSTÁCULO O DESAFÍO",
+"RAÍZ DEL ASUNTO",
+"PASADO",
+"POSIBILIDAD CONSCIENTE",
+"FUTURO PRÓXIMO",
+"TU POSICIÓN",
+"ENTORNO",
+"DESEOS Y TEMORES",
+"RESULTADO SIMBÓLICO"
+];
+
+let tipoActual="general";
+let cantidadActual=0;
+
+function seleccionar(tipo,cantidad,boton) {
+  tipoActual=tipo;
+  cantidadActual=cantidad;
+
+  document.querySelectorAll(".opcion").forEach(b=>{
+    b.classList.remove("activo");
+  });
+
+  boton.classList.add("activo");
+
+  document.getElementById("resultadoTarot").style.display="none";
+
+  const nombre=tipo==="amor"?"TAROT DEL AMOR":"TAROT GENERAL";
+
+  const titulo=cantidad===1?"UNA CARTA":
+    cantidad===3?"TRES CARTAS":"CRUZ CELTA";
+
+  document.getElementById("tituloTirada").textContent=
+    nombre+" · "+titulo;
+
+  document.getElementById("descripcion").textContent=
+    cantidad===1?"Una carta para explorar tu pregunta.":
+    cantidad===3?"Pasado, presente y tendencia.":
+    "Una lectura simbólica de diez posiciones.";
+
+  document.getElementById("zonaTarot").scrollIntoView({
+    behavior:"smooth",
+    block:"start"
+  });
+}
+
+function significadoCarta(carta,invertida) {
+  const indice=arcanos.indexOf(carta);
+  let texto="";
+
+  if(indice<22) {
+    texto=significados[indice];
+  } else {
+    const palo=Object.keys(palos).find(p=>carta.includes(p));
+    const rango=Object.keys(rangos).find(r=>carta.startsWith(r));
+
+    texto="Esta carta representa "+
+      (rangos[rango]||"un proceso")+
+      " relacionado con "+palos[palo]+".";
+  }
+
+  if(invertida) {
+    texto+=" En posición invertida, invita a revisar bloqueos, resistencias o aspectos que necesitan mayor atención.";
+  }
+
+  return texto;
+}
+
+function contextoCarta(i) {
+  if(cantidadActual===1) {
+    return tipoActual==="amor"
+      ?"En el plano afectivo, esta carta invita a reflexionar sobre los sentimientos, los vínculos y la manera de relacionarse."
+      :"El mensaje central propone observar la situación actual y reconocer qué energía está presente.";
+  }
+
+  if(cantidadActual===3) {
+    const etapas=["En relación con el pasado,","En el presente,","Como tendencia hacia adelante,"];
+
+    return tipoActual==="amor"
+      ?etapas[i]+" esta carta permite explorar la evolución emocional del vínculo."
+      :etapas[i]+" esta carta permite observar cómo se desarrolla el proceso.";
+  }
+
+  return posiciones[i]+". "+
+    (tipoActual==="amor"
+      ?"En el ámbito afectivo, esta posición permite explorar emociones y dinámicas del vínculo."
+      :"Esta posición permite explorar un aspecto diferente de la situación consultada.");
+}
+
+function tirarCartas() {
+  if(!cantidadActual) {
+    alert("Primero seleccioná una tirada.");
+    return;
+  }
+
+  const mazo=[...arcanos];
+
+  for(let i=mazo.length-1;i>0;i--) {
+    const j=Math.floor(Math.random()*(i+1));
+    [mazo[i],mazo[j]]=[mazo[j],mazo[i]];
+  }
+
+  const elegidas=mazo.slice(0,cantidadActual);
+
+  const cartasDiv=document.getElementById("cartas");
+  const interpretaciones=document.getElementById("interpretaciones");
+
+  cartasDiv.innerHTML="";
+  interpretaciones.innerHTML="";
+
+  elegidas.forEach((carta,i)=>{
+    const invertida=Math.random()<0.3;
+    const nombre=carta+(invertida?" · INVERTIDA":" · DERECHA");
+
+    const div=document.createElement("div");
+    div.className="carta";
+
+    const simbolo=document.createElement("div");
+    simbolo.className="simbolo";
+    simbolo.textContent="✧";
+
+    const titulo=document.createElement("strong");
+    titulo.textContent=nombre;
+
+    const posicion=document.createElement("small");
+    posicion.textContent=cantidadActual===10?posiciones[i]:
+      cantidadActual===3?["PASADO","PRESENTE","FUTURO"][i]:"TU CARTA";
+
+    div.append(simbolo,titulo,posicion);
+    cartasDiv.appendChild(div);
+
+    const texto=document.createElement("div");
+    texto.className="interpretacion";
+
+    const encabezado=document.createElement("strong");
+    encabezado.style.color="var(--dorado)";
+    encabezado.textContent=nombre;
+
+    const p=document.createElement("p");
+    p.textContent=significadoCarta(carta,invertida);
+
+    const contexto=document.createElement("p");
+    contexto.textContent=contextoCarta(i);
+
+    texto.append(encabezado,p,contexto);
+    interpretaciones.appendChild(texto);
+  });
+
+  const pregunta=document.getElementById("pregunta").value.trim();
+
+  if(pregunta) {
+    const consulta=document.createElement("div");
+    consulta.className="interpretacion";
+    consulta.textContent="CONSULTA: "+pregunta;
+    interpretaciones.prepend(consulta);
+  }
+
+  document.getElementById("resultadoTarot").style.display="block";
+
+  document.getElementById("resultadoTarot").scrollIntoView({
+    behavior:"smooth",
+    block:"start"
+  });
+}
+
+// ==================================
+// LOS 12 SIGNOS
+// ==================================
+
+const signos=[
+{nombre:"ARIES",clave:"aries",icono:"♈"},
+{nombre:"TAURO",clave:"taurus",icono:"♉"},
+{nombre:"GÉMINIS",clave:"gemini",icono:"♊"},
+{nombre:"CÁNCER",clave:"cancer",icono:"♋"},
+{nombre:"LEO",clave:"leo",icono:"♌"},
+{nombre:"VIRGO",clave:"virgo",icono:"♍"},
+{nombre:"LIBRA",clave:"libra",icono:"♎"},
+{nombre:"ESCORPIO",clave:"scorpio",icono:"♏"},
+{nombre:"SAGITARIO",clave:"sagittarius",icono:"♐"},
+{nombre:"CAPRICORNIO",clave:"capricorn",icono:"♑"},
+{nombre:"ACUARIO",clave:"aquarius",icono:"♒"},
+{nombre:"PISCIS",clave:"pisces",icono:"♓"}
+];
+
+let horoscopos={};
+let signoSeleccionado=null;
+
+const contenedorSignos=document.getElementById("signos");
+
+signos.forEach(signo=>{
+  const boton=document.createElement("button");
+  boton.className="signo";
+
+  const icono=document.createElement("span");
+  icono.className="icono";
+  icono.textContent=signo.icono;
+
+  const nombre=document.createElement("strong");
+  nombre.textContent=signo.nombre;
+
+  boton.append(icono,nombre);
+  boton.onclick=()=>mostrarHoroscopo(signo,boton);
+
+  contenedorSignos.appendChild(boton);
+});
+
+// ==================================
+// CONSULTA AL SERVIDOR
+// ==================================
+
+async function cargarHoroscopos() {
+  const estado=document.getElementById("estado");
+  const boton=document.querySelector("#zonaHoroscopo .boton");
+
+  estado.textContent="CONSULTANDO LOS HORÓSCOPOS DEL DÍA...";
+
+  if(boton) boton.disabled=true;
+
+  try {
+    const respuesta=await fetch("/api/horoscopo");
+
+    if(!respuesta.ok) {
+      throw new Error("Error del servidor: "+respuesta.status);
+    }
+
+    const datos=await respuesta.json();
+
+    horoscopos={};
+
+    // Admite respuestas organizadas como array o como objeto.
+    const items=Array.isArray(datos)
+      ?datos
+      :Array.isArray(datos.items)
+        ?datos.items
+        :Array.isArray(datos.data)
+          ?datos.data
+          :null;
+
+    if(items) {
+      items.forEach(item=>{
+        const clave=String(
+          item.sign||item.signo||item.slug||item.name||""
+        ).toLowerCase();
+
+        const signo=signos.find(s=>
+          s.clave===clave ||
+          s.nombre.toLowerCase()===clave
+        );
+
+        const texto=item.text||item.horoscope||
+          item.description||item.prediction||item.content;
+
+        if(signo && typeof texto==="string") {
+          horoscopos[signo.clave]=texto;
+        }
+      });
+    } else if(datos && typeof datos==="object") {
+      Object.entries(datos).forEach(([clave,valor])=>{
+        const signo=signos.find(s=>
+          s.clave===clave.toLowerCase() ||
+          s.nombre.toLowerCase()===clave.toLowerCase()
+        );
+
+        const texto=typeof valor==="string"
+          ?valor
+          :valor?.text||valor?.horoscope||
+           valor?.description||valor?.prediction;
+
+        if(signo && typeof texto==="string") {
+          horoscopos[signo.clave]=texto;
+        }
+      });
+    }
+
+    if(Object.keys(horoscopos).length===0) {
+      throw new Error("La respuesta no contiene horóscopos reconocibles.");
+    }
+
+    estado.textContent="HORÓSCOPOS ACTUALIZADOS.";
+
+    if(signoSeleccionado) {
+      mostrarHoroscopo(
+        signoSeleccionado,
+        document.querySelector(".signo.activo")
+      );
+    }
+
+  } catch(error) {
+    console.error(error);
+    estado.textContent="NO SE PUDO CARGAR EL HORÓSCOPO. INTENTÁ NUEVAMENTE.";
+  } finally {
+    if(boton) boton.disabled=false;
+  }
+}
+
+// ==================================
+// MOSTRAR HORÓSCOPO
+// ==================================
+
+function mostrarHoroscopo(signo,boton) {
+  signoSeleccionado=signo;
+
+  document.getElementById("tituloSigno").textContent=
+    signo.icono+" "+signo.nombre;
+
+  document.getElementById("fecha").textContent=
+    "HORÓSCOPO DIARIO · "+
+    new Date().toLocaleDateString("es-AR");
+
+  document.querySelectorAll(".signo").forEach(b=>{
+    b.classList.remove("activo");
+  });
+
+  if(boton) boton.classList.add("activo");
+
+  document.getElementById("textoHoroscopo").textContent=
+    horoscopos[signo.clave]||
+    "El horóscopo de este signo todavía no está disponible.";
+
+  document.getElementById("zonaHoroscopo").scrollIntoView({
+    behavior:"smooth",
+    block:"start"
+  });
+}
+
+// ==================================
+// INICIO
+// ==================================
+
+cargarHoroscopos();
+
+</script>
+</body>
+</html>
